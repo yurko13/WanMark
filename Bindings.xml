@@ -1,0 +1,5 @@
+<Bindings>
+	<Binding name="CLICK WanMark:Mark" header="WANMARK" category="ADDONS"/>
+	<Binding name="CLICK WanMark:Mode" header="WANMARK" category="ADDONS"/>
+	<Binding name="CLICK WanMark:DeMark" header="WANMARK" category="ADDONS"/>
+</Bindings>
