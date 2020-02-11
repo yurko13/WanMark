@@ -1,6 +1,6 @@
 0.5.4
 Source uploaded to github, working on automatic version creation and
-packaging...
+packaging based on tags.
 
 0.5.3
 1. Bugfixes.
