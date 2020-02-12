@@ -1,3 +1,6 @@
+0.5.5
+Using githib branches to see how pushing to curseforge works
+
 0.5.4
 Source uploaded to github, working on automatic version creation and
 packaging based on tags.

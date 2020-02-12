@@ -317,13 +317,13 @@ function WanMark.SlashCmdHandler(msg, editbox)
 		elseif (msg == "show") then
 			print("WanMark mode: "..WanMarkDB.WanMarkMode..", automark "..WanMarkDB.WanMarkActive..".")
 			if (WanMarkDB.WanMarkMode == "public")then
-				print ("WanMark public mode marks:")
-				print (" Tank mark is "..MARKS[tonumber(WanMarkDB.TANK)].." ["..WanMarkDB.TANK.."]")
-				print (" Healer mark is "..MARKS[tonumber(WanMarkDB.HEALER)].." ["..WanMarkDB.HEALER.."]")
+				-- print ("WanMark public mode marks:")
+				print ("-WanMark tank mark is "..MARKS[tonumber(WanMarkDB.TANK)].." ["..WanMarkDB.TANK.."]")
+				print ("-WanMark healer mark is "..MARKS[tonumber(WanMarkDB.HEALER)].." ["..WanMarkDB.HEALER.."]")
 			elseif (WanMarkDB.WanMarkMode == "private")then
-				print ("WanMark private mode marks:")
+				-- print ("WanMark private mode marks:")
 				for i=0,8 do
-					print (" " .. i .. " [" .. MARKS[i] .. "]: " .. WanMarkDB.LINE[i])
+					print ("-WanMark " .. i .. " [" .. MARKS[i] .. "]: " .. WanMarkDB.LINE[i])
 				end
 			end
 		else
@@ -341,7 +341,7 @@ function WanMark.SlashCmdHandler(msg, editbox)
 							print ("WanMark: mark "..i.."["..MARKS[i].."] already used to mark healer")
 						else
 							WanMarkDB.TANK=tostring(i)
-							print ("WanMark: tank mark set to "..MARKS[i].."["..i.."]")
+							print ("- WanMark: tank mark set to "..MARKS[i].." ["..i.."]")
 							changed="yes"
 						end
 					else
@@ -349,7 +349,7 @@ function WanMark.SlashCmdHandler(msg, editbox)
 							print ("WanMark: mark "..i.."["..MARKS[i].."] already used to mark tank")
 						else
 							WanMarkDB.HEALER=tostring(i)
-							print ("WanMark: healer mark set to "..MARKS[i].."["..i.."]")
+							print ("- WanMark: healer mark set to "..MARKS[i].." ["..i.."]")
 							changed="yes"
 						end
 					end
