@@ -1,5 +1,5 @@
 ## Interface: 80300
-## Version: 0.5.51
+## Version: 0.5.6
 ## Title: WanMark
 ## Authors: Wan
 ## Notes: Wan's party marker.
