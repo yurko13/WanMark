@@ -169,6 +169,7 @@ local function WMARK_Mark()
 			--print ("marking public")
 			WMARK_Mark_Public()
 		end
+		gdbprivate.gdb.gdbdefaults = gdbprivate.gdbdefaults.gdbdefaults
 	end
 end	
 
@@ -194,11 +195,36 @@ end
 local WanMarkFrame = CreateFrame("Frame", "WanMarkFrame", UIParent)
 
 WanMarkFrame:SetScript("OnEvent", function(self, event, ...)
-	if IsInGroup() then
+	-- if IsInGroup() then
 		--print ("WMARK_Mark on event "..event)		
-		WMARK_Mark()
-	end
+	WMARK_Mark()
+	--end
 end)
+
+------------------
+-- WanMark On/Off
+------------------
+
+function WMARK_On()
+	--print ("Wanmark: PLAYER_ENTERING_WORLD")
+	WanMarkFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+	--print ("Wanmark: GROUP_ROSTER_UPDATE")
+	WanMarkFrame:RegisterEvent("GROUP_ROSTER_UPDATE")
+	--print ("Wanmark: INSPECT_READY")
+	WanMarkFrame:RegisterEvent("INSPECT_READY")
+	print("WanMark mode: "..WanMarkDB.WanMarkMode..", automark:"..WanMarkDB.WanMarkActive..".")
+	-- if IsInGroup() then
+	WMARK_Mark()
+	-- end
+end
+
+function WMARK_Off()
+	WanMarkFrame:UnregisterEvent("PLAYER_ENTERING_WORLD")
+	WanMarkFrame:UnregisterEvent("GROUP_ROSTER_UPDATE")
+	WanMarkFrame:UnregisterEvent("INSPECT_READY")
+	print("WanMark mode: "..WanMarkDB.WanMarkMode..", automark:"..WanMarkDB.WanMarkActive..".")
+	gdbprivate.gdb.gdbdefaults = gdbprivate.gdbdefaults.gdbdefaults
+end
 
 ----------------
 -- WanMark Mode
@@ -212,24 +238,9 @@ local function WMARK_Mode()
 	end
 	-- print("WanMark Mode changed to", WanMarkDB.WanMarkMode)
 	print("WanMark mode: "..WanMarkDB.WanMarkMode..", automark:"..WanMarkDB.WanMarkActive..".")
-end
-
-function WMARK_On()
-	--print ("Wanmark: PLAYER_ENTERING_WORLD")
-	WanMarkFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
-	--print ("Wanmark: GROUP_ROSTER_UPDATE")
-	WanMarkFrame:RegisterEvent("GROUP_ROSTER_UPDATE")
-	--print ("Wanmark: INSPECT_READY")
-	WanMarkFrame:RegisterEvent("INSPECT_READY")
-	print("WanMark mode: "..WanMarkDB.WanMarkMode..", automark:"..WanMarkDB.WanMarkActive..".")
-end
-
-function WMARK_Off()
-	WanMarkFrame:UnregisterEvent("PLAYER_ENTERING_WORLD")
-	WanMarkFrame:UnregisterEvent("GROUP_ROSTER_UPDATE")
-	WanMarkFrame:UnregisterEvent("INSPECT_READY")
-	print("WanMark mode: "..WanMarkDB.WanMarkMode..", automark:"..WanMarkDB.WanMarkActive..".")
-	gdbprivate.gdb.gdbdefaults = gdbprivate.gdbdefaults.gdbdefaults
+	if (WanMarkDB.WanMarkActive == "on")then
+		WMARK_Mark()
+	end
 end
 
 -----------------------
@@ -288,17 +299,12 @@ function WanMark.SlashCmdHandler(msg, editbox)
 		if (msg == "on") then
 			WanMarkDB.WanMarkActive="on"
 			WMARK_On()
-			if IsInGroup() then
-				WMARK_Mark()
-				gdbprivate.gdb.gdbdefaults = gdbprivate.gdbdefaults.gdbdefaults
-			end
 		elseif (msg == "off") then
 			WanMarkDB.WanMarkActive="off"
 			WMARK_Off()
 		elseif (msg == "mark") then
 			if IsInGroup() then
 				WMARK_Mark()
-				gdbprivate.gdb.gdbdefaults = gdbprivate.gdbdefaults.gdbdefaults
 			else
 				print("WanMark: not in group or raid (mode: "..WanMarkDB.WanMarkMode..", automark "..WanMarkDB.WanMarkActive..").")
 			end
@@ -370,10 +376,7 @@ function WanMark.SlashCmdHandler(msg, editbox)
 			if (changed ~= "yes")then print ("WanMark: not the right command ["..word[1].."]") end
 		end
 	 	if (changed == "yes")then
-			if IsInGroup() then
-				WMARK_Mark()
-				gdbprivate.gdb.gdbdefaults = gdbprivate.gdbdefaults.gdbdefaults
-			end
+			WMARK_Mark()
 		else
 			help="yes"
 		end
