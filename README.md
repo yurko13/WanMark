@@ -14,10 +14,10 @@ For example, usually I play with the same guild mates, each of them has few alts
  
 
 ### WanMark keeps current settings stored, when you re-log or log under another character (the settings are global, not per character):
- - current mode, which can be public or private;
- - current auto-mark setting, which can be enabled or disabled;
- - current raid setting: disabled (default) or enabled marking in raid group;
- - for public mode chosen marks for tank and healer.
+ - group marking mode: public or private;
+ - group auto-marking: disabled or enabled;
+ - raid group marking: disabled (default) or enabled;
+ - for public mode marks for tank and healer.
  - for private mode lists of characters/marks.
 
 ### WanMark let you assign 3 keybindings (using standard WOW Esc-Menu -> Key Bindings -> Addons -> WanMark):
