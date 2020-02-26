@@ -16,6 +16,7 @@ For example, usually I play with the same guild mates, each of them has few alts
 ### WanMark keeps current settings stored, when you re-log or log under another character (the settings are global, not per character):
  - current mode, which can be public or private;
  - current auto-mark setting, which can be enabled or disabled;
+ - current raid setting: disabled (default) or enabled marking in raid group;
  - for public mode chosen marks for tank and healer.
  - for private mode lists of characters/marks.
 
@@ -35,6 +36,7 @@ For example, usually I play with the same guild mates, each of them has few alts
   - /wmark public: switches to public marking mode.
   - /wmark private: switches to private marking mode.
   - /wmark mode: switches marking mode between private and public (if you do not like shortcuts).
+  - /wmark raid [on/off]: shows/enables/disables marking/demarking in raid.
 
 
 ### WanMark also supports advanced commands for public and private modes.
