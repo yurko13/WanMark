@@ -21,6 +21,7 @@ MARKS[8] = "skull"
 
 -- variable LINE used for test purposes
 local LINE = {}
+<<<<<<< HEAD
 LINE[0] = "" 							-- none
 LINE[1] = "Homika Ziri Jeena Juliemao Lileh Fuzzy"		-- star
 LINE[2] = "" 							-- circle
@@ -30,6 +31,17 @@ LINE[5] = "Braemyr Aoth Kordannon Rommus Chubble Aonar"		-- moon
 LINE[6] = "" 							-- square
 LINE[7] = "Xhunta Xshadowlock Xdrud Xfuzzbow Xfuzzshock Xmage" 	-- cross
 LINE[8] = "" 							-- skull
+=======
+LINE[0] = "" 													-- none
+LINE[1] = "Homika Ziri Jeena Juliemao Lileh Fuzzy" 				-- star
+LINE[2] = "" 													-- circle
+LINE[3] = "Lonarwen Valtherion Valtheria" 						-- diamond
+LINE[4] = "Wan Wandal Wandead Wanbah Wanshoo Wanhun" 			-- triangle
+LINE[5] = "Braemyr Aoth Kordannon Rommus Chubble Aonar" 		-- moon
+LINE[6] = "" 													-- square
+LINE[7] = "Xhunta Xshadowlock Xdrud Xfuzzbow Xfuzzshock Xmage Xfuzzcharge" -- cross
+LINE[8] = "" 													-- skull
+>>>>>>> dev
 
 gdbprivate.gdbdefaults = {}
 gdbprivate.gdbdefaults.gdbdefaults = {}
@@ -60,6 +72,7 @@ local loader = CreateFrame("Frame")
 			if (WanMarkDB.LINE == nil)then  WanMarkDB.LINE = {} end
 			if (WanMarkDB.TANK == nil)then WanMarkDB.TANK = "4" end
 			if (WanMarkDB.HEALER == nil)then WanMarkDB.HEALER = "1" end
+			if (WanMarkDB.WanMarkRaid == nil)then WanMarkDB.WanMarkRaid = "off" end
 			for i=0,8 do
 				--WanMarkDB.LINE[i] = ""
 				if (WanMarkDB.LINE[i] == nil)then WanMarkDB.LINE[i] = "" end;
@@ -161,6 +174,11 @@ local function WMARK_Mark_Private()
 end
 
 local function WMARK_Mark()
+	if IsInRaid() then 
+		if (WanMarkDB.WanMarkRaid == "off")then
+			return
+		end
+	end
 	if IsInGroup() then
 		if (WanMarkDB.WanMarkMode == "private") then
 			--print ("marking private")
@@ -179,8 +197,12 @@ end
 
 local function WMARK_DeMark()
 	if IsInRaid() then 
-		return
-	elseif IsInGroup() then
+		if (WanMarkDB.WanMarkRaid == "off")then
+			print ("WanMark: disabled in raid, to enable run '/wanmark raid on'")
+			return
+		end
+	end
+	if IsInGroup() then
 		SetRaidTarget("player", 0)
 		local members = GetNumGroupMembers()-1;
 		for i=1,members do 
@@ -274,13 +296,15 @@ end
 function WanMark.ShowHelp()
 	print(addoninfo)
 	print("WanMark Slash commands (/wmark):")
-	print("  /wmark on: Enables WanMark automatic mode.")
-	print("  /wmark off: Disables WanMark automatic mode.")
-	print("  /wmark mark: Marks the targets regardless of automatic mode status.")
-	print("  /wmark demark: Removes any party members marks.")
-	print("  /wmark private: Enables private (default) marking mode (Revelation).")
-	print("  /wmark public: Enables public marking mode (Tank/Healer).")
-	print("  /wmark mode: Switches marking mode between private and public.")
+	print("  /wmark on: enables WanMark automatic mode.")
+	print("  /wmark off: disables WanMark automatic mode.")
+	print("  /wmark mark: marks the targets regardless of automatic mode status.")
+	print("  /wmark demark: removes any party members marks.")
+	print("  /wmark private: enables private (default) marking mode (Revelation).")
+	print("  /wmark public: enables public marking mode (Tank/Healer).")
+	print("  /wmark mode: switches marking mode between private and public.")
+	print("  /wmark show: prints assigned marks (different in private and public).")
+	print("  /wmark raid [on/off]: shows/enables/disables marking/demarking in raid group.")
 end
 
 function WanMark.SlashCmdHandler(msg, editbox)
@@ -304,7 +328,15 @@ function WanMark.SlashCmdHandler(msg, editbox)
 			WMARK_Off()
 		elseif (msg == "mark") then
 			if IsInGroup() then
-				WMARK_Mark()
+				if IsInRaid() then 
+					if (WanMarkDB.WanMarkRaid == "off")then
+						print ("WanMark: disabled in raid, to enable run '/wanmark raid on'")
+					else
+						WMARK_Mark()
+					end
+				else
+					WMARK_Mark()
+				end
 			else
 				print("WanMark: not in group or raid (mode: "..WanMarkDB.WanMarkMode..", automark "..WanMarkDB.WanMarkActive..").")
 			end
@@ -332,6 +364,8 @@ function WanMark.SlashCmdHandler(msg, editbox)
 					print ("-WanMark " .. i .. " [" .. MARKS[i] .. "]: " .. WanMarkDB.LINE[i])
 				end
 			end
+		elseif (msg == "raid") then
+			print ("WanMark in raid: "..WanMarkDB.WanMarkRaid)
 		else
 			help="yes"
 		end
@@ -362,6 +396,10 @@ function WanMark.SlashCmdHandler(msg, editbox)
 				end
 			end
 			if (changed ~= "yes")then print ("WanMark: not the right mark ["..word[2].."]") end
+		elseif (word[1] == "raid") then
+			if (word[2] == "on"  and WanMarkDB.WanMarkRaid ~= "on" )then WanMarkDB.WanMarkRaid="on"  end
+			if (word[2] == "off" and WanMarkDB.WanMarkRaid ~= "off")then WanMarkDB.WanMarkRaid="off" end
+			print ("WanMark in raid: "..WanMarkDB.WanMarkRaid)
 		else
 			--print "more than 1 word, but no tank or healer"
 			for i=0,8 do
@@ -393,7 +431,15 @@ local toggleframe = CreateFrame("Button","WanMark",UIParent,"SecureHandlerClickT
 	toggleframe:SetScript("OnClick", function (self, button, down)
 		if (button == "Mark")then
 			if IsInGroup() then
-				WMARK_Mark()
+				if IsInRaid() then 
+					if (WanMarkDB.WanMarkRaid == "off")then
+						print ("WanMark: disabled in raid, to enable run '/wanmark raid on'")
+					else
+						WMARK_Mark()
+					end
+				else
+					WMARK_Mark()
+				end
 			else
 				print("WanMark: not in group or raid (mode: "..WanMarkDB.WanMarkMode..", automark "..WanMarkDB.WanMarkActive..").")
 			end
