@@ -21,17 +21,6 @@ MARKS[8] = "skull"
 
 -- variable LINE used for test purposes
 local LINE = {}
-<<<<<<< HEAD
-LINE[0] = "" 							-- none
-LINE[1] = "Homika Ziri Jeena Juliemao Lileh Fuzzy"		-- star
-LINE[2] = "" 							-- circle
-LINE[3] = "Lonarwen Valtherion Valtheria" 			-- diamond
-LINE[4] = "Wan Wandal Wandead Wanbah Wanshoo Wanhun" 		-- triangle
-LINE[5] = "Braemyr Aoth Kordannon Rommus Chubble Aonar"		-- moon
-LINE[6] = "" 							-- square
-LINE[7] = "Xhunta Xshadowlock Xdrud Xfuzzbow Xfuzzshock Xmage" 	-- cross
-LINE[8] = "" 							-- skull
-=======
 LINE[0] = "" 													-- none
 LINE[1] = "Homika Ziri Jeena Juliemao Lileh Fuzzy" 				-- star
 LINE[2] = "" 													-- circle
@@ -41,7 +30,6 @@ LINE[5] = "Braemyr Aoth Kordannon Rommus Chubble Aonar" 		-- moon
 LINE[6] = "" 													-- square
 LINE[7] = "Xhunta Xshadowlock Xdrud Xfuzzbow Xfuzzshock Xmage Xfuzzcharge" -- cross
 LINE[8] = "" 													-- skull
->>>>>>> dev
 
 gdbprivate.gdbdefaults = {}
 gdbprivate.gdbdefaults.gdbdefaults = {}
