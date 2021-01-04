@@ -22,13 +22,13 @@ MARKS[8] = "skull"
 -- variable LINE used for test purposes
 local LINE = {}
 LINE[0] = "" 													-- none
-LINE[1] = "Homika Ziri Jeena Juliemao Lileh Fuzzy" 				-- star
+LINE[1] = "Homika Ziri Jeena Juliemao Lileh Foxsiona Foxight" 		    -- star
 LINE[2] = "" 													-- circle
-LINE[3] = "Lonarwen Valtherion Valtheria" 						-- diamond
-LINE[4] = "Wan Wandal Wandead Wanbah Wanshoo Wanhun" 			-- triangle
-LINE[5] = "Braemyr Aoth Kordannon Rommus Chubble Aonar" 		-- moon
-LINE[6] = "" 													-- square
-LINE[7] = "Xhunta Xshadowlock Xdrud Xfuzzbow Xfuzzshock Xmage Xfuzzcharge" -- cross
+LINE[3] = "Lonarwen Valtheria Kalrendis Xeena"					-- diamond
+LINE[4] = "Wan Wandal Wandead Wanbah Wanshoo Wanhun Wand Wan Wanlee Wantro"	-- triangle
+LINE[5] = "Braemyr Aoth Kordannon Rommus Chubble Aonar Orieon Ehryndar" -- moon
+LINE[6] = "Dilute Fajanature Wurshipdis Dakarai Sun Quartz"						-- square
+LINE[7] = "Xhunta Xshadowlock Xdrud Xfuzzbow Xfuzzshock Xmage Xfuzzcharge Xwingchun" -- cross
 LINE[8] = "" 													-- skull
 
 gdbprivate.gdbdefaults = {}
@@ -112,7 +112,53 @@ local loader = CreateFrame("Frame")
 local function WMARK_Mark_Public()
 	--local ROLEMARKS={["TANK"]=4,["HEALER"]=1}
 	local ROLEMARKS={}
+	--####
+	if IsInRaid() then
+		--####
+		ROLEMARKS[1]=WanMarkDB.TANK
+		local index=2
+		for i=1,7 do
+			if (i ~= WanMarkDB.TANK)then
+				ROLEMARKS[index]=i
+				index=index+1
+			end
+		end
+		--####
+		--for i=1,7 do
+		--	print ("  #--"..i..": "..ROLEMARKS[i])
+		--end
+		--####
+		index=1
+		local currentSpecID, currentSpecName = GetSpecializationInfo(GetSpecialization())
+		local roleToken = GetSpecializationRoleByID(currentSpecID)
+		--print ("roletoken for player = "..roleToken)
+		if (roleToken == "TANK") then
+			--print ("player is tank yes and mark is "..ROLEMARKS[index])
+			SetRaidTarget("player", ROLEMARKS[index])
+			index=index+1
+		--else
+			--print ("player is not tank")
+		end
+		--####
+		local members = GetNumGroupMembers()-1;
+		for i=1,members do 
+			local role=UnitGroupRolesAssigned("party"..i)
+			if (role == "TANK") then 
+				SetRaidTarget("party"..i,ROLEMARKS[index])
+				--print ("party "..i.. " mark "..ROLEMARKS[index].." index "..index)
+				index=index+1
+				if (index == 8)then
+					return
+				end
+			end
+		end
+		--####
+		return
+	end
+	--####
 	ROLEMARKS["TANK"]=tostring(WanMarkDB.TANK)
+	--if IsInRaid() then
+	--end
 	ROLEMARKS["HEALER"]=tostring(WanMarkDB.HEALER)
 	--####
 	local currentSpecID, currentSpecName = GetSpecializationInfo(GetSpecialization())
@@ -180,6 +226,15 @@ local function WMARK_Mark()
 end	
 
 ------------------
+-- WanMark Show
+------------------
+function WMARK_Show()
+	-- |cFFDC143C red
+	-- |cFF00FF00 green |r uncolored
+	print("|cFF00FF00WanMark mode: "..WanMarkDB.WanMarkMode..", automark:"..WanMarkDB.WanMarkActive..", raid:"..WanMarkDB.WanMarkRaid..".")
+end
+
+------------------
 -- WanMark DeMark
 ------------------
 
@@ -196,9 +251,12 @@ local function WMARK_DeMark()
 		for i=1,members do 
 			SetRaidTarget("party"..i,0)
 		end
-		print("WanMark removed party marks (mode: "..WanMarkDB.WanMarkMode..", automark "..WanMarkDB.WanMarkActive..").")
+		print("WanMark: party marks removed.")
+		WMARK_Show()
+
 	else
-		print("WanMark: not in group or raid (mode: "..WanMarkDB.WanMarkMode..", automark "..WanMarkDB.WanMarkActive..").")
+		print("WanMark: not in group or raid.")
+		WMARK_Show()
 	end
 end
 
@@ -222,7 +280,8 @@ function WMARK_On()
 	WanMarkFrame:RegisterEvent("GROUP_ROSTER_UPDATE")
 	--print ("Wanmark: INSPECT_READY")
 	WanMarkFrame:RegisterEvent("INSPECT_READY")
-	print("WanMark mode: "..WanMarkDB.WanMarkMode..", automark:"..WanMarkDB.WanMarkActive..".")
+	--print("WanMark mode: "..WanMarkDB.WanMarkMode..", automark:"..WanMarkDB.WanMarkActive..".")
+	WMARK_Show()
 	-- if IsInGroup() then
 	WMARK_Mark()
 	-- end
@@ -232,7 +291,8 @@ function WMARK_Off()
 	WanMarkFrame:UnregisterEvent("PLAYER_ENTERING_WORLD")
 	WanMarkFrame:UnregisterEvent("GROUP_ROSTER_UPDATE")
 	WanMarkFrame:UnregisterEvent("INSPECT_READY")
-	print("WanMark mode: "..WanMarkDB.WanMarkMode..", automark:"..WanMarkDB.WanMarkActive..".")
+	--print("WanMark mode: "..WanMarkDB.WanMarkMode..", automark:"..WanMarkDB.WanMarkActive..".")
+	WMARK_Show()
 	gdbprivate.gdb.gdbdefaults = gdbprivate.gdbdefaults.gdbdefaults
 end
 
@@ -247,7 +307,8 @@ local function WMARK_Mode()
 		WanMarkDB.WanMarkMode = "private"
 	end
 	-- print("WanMark Mode changed to", WanMarkDB.WanMarkMode)
-	print("WanMark mode: "..WanMarkDB.WanMarkMode..", automark:"..WanMarkDB.WanMarkActive..".")
+	--print("WanMark mode: "..WanMarkDB.WanMarkMode..", automark:"..WanMarkDB.WanMarkActive..".")
+	WMARK_Show()
 	if (WanMarkDB.WanMarkActive == "on")then
 		WMARK_Mark()
 	end
@@ -292,7 +353,7 @@ function WanMark.ShowHelp()
 	print("  /wmark public: enables public marking mode (Tank/Healer).")
 	print("  /wmark mode: switches marking mode between private and public.")
 	print("  /wmark show: prints assigned marks (different in private and public).")
-	print("  /wmark raid [on/off]: shows/enables/disables marking/demarking in raid group.")
+	print("  /wmark raid [on/off]: shows/enables/disables marking/demarking in raid group (experimental).")
 end
 
 function WanMark.SlashCmdHandler(msg, editbox)
@@ -341,7 +402,8 @@ function WanMark.SlashCmdHandler(msg, editbox)
 		elseif (msg == "mode") then
 			WMARK_Mode()
 		elseif (msg == "show") then
-			print("WanMark mode: "..WanMarkDB.WanMarkMode..", automark "..WanMarkDB.WanMarkActive..".")
+			--print("WanMark mode: "..WanMarkDB.WanMarkMode..", automark "..WanMarkDB.WanMarkActive..".")
+			WMARK_Show()
 			if (WanMarkDB.WanMarkMode == "public")then
 				-- print ("WanMark public mode marks:")
 				print ("-WanMark tank mark is "..MARKS[tonumber(WanMarkDB.TANK)].." ["..WanMarkDB.TANK.."]")
@@ -359,8 +421,9 @@ function WanMark.SlashCmdHandler(msg, editbox)
 		end
 	else
 		local changed="no"
+		--print("help=no and word2 is not empty")
 		if (words[1] == "tank" or words[1] == "healer")then
-			--print "tank or healer"
+			--print ("tank or healer")
 			for i=0,8 do
 				if (words[2] == tostring(i) or words[2] == MARKS[i]) then
 					print ("command found: ",words[2]," ["..i.."/"..MARKS[i].."]")
@@ -384,12 +447,20 @@ function WanMark.SlashCmdHandler(msg, editbox)
 				end
 			end
 			if (changed ~= "yes")then print ("WanMark: not the right mark ["..word[2].."]") end
-		elseif (word[1] == "raid") then
-			if (word[2] == "on"  and WanMarkDB.WanMarkRaid ~= "on" )then WanMarkDB.WanMarkRaid="on"  end
-			if (word[2] == "off" and WanMarkDB.WanMarkRaid ~= "off")then WanMarkDB.WanMarkRaid="off" end
+		elseif (words[1] == "raid") then
+			--print ("word 1 is raid")
+			if (words[2] == "on"  and WanMarkDB.WanMarkRaid ~= "on" ) then
+				WanMarkDB.WanMarkRaid="on"
+				changed="yes"
+			end
+			if (words[2] == "off" and WanMarkDB.WanMarkRaid ~= "off") then
+				WanMarkDB.WanMarkRaid="off"
+				changed="yes"
+			end
+			if (changed ~= "yes")then print ("WanMark: not the right raid command ["..word[2].."]") end
 			print ("WanMark in raid: "..WanMarkDB.WanMarkRaid)
 		else
-			--print "more than 1 word, but no tank or healer"
+			--print ("more than 1 word, but no tank or healer")
 			for i=0,8 do
 				if (words[1] == tostring(i) or words[1] == MARKS[i]) then
 					WanMarkDB.LINE[i]=words[2]
