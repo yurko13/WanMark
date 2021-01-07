@@ -1,5 +1,5 @@
 ## Interface: 90002
-## Version: 1.0.5
+## Version: 1.0.6
 ## Title: WanMark
 ## Authors: Wan
 ## Notes: Wan's party marker.
