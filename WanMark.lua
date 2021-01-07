@@ -61,6 +61,7 @@ local loader = CreateFrame("Frame")
 			if (WanMarkDB.TANK == nil)then WanMarkDB.TANK = "4" end
 			if (WanMarkDB.HEALER == nil)then WanMarkDB.HEALER = "1" end
 			if (WanMarkDB.WanMarkRaid == nil)then WanMarkDB.WanMarkRaid = "off" end
+			if (WanMarkDB.WanMarkSelf == nil)then WanMarkDB.WanMarkSelf = "off" end
 			for i=0,8 do
 				--WanMarkDB.LINE[i] = ""
 				if (WanMarkDB.LINE[i] == nil)then WanMarkDB.LINE[i] = "" end;
@@ -73,37 +74,37 @@ local loader = CreateFrame("Frame")
 		end
 	end)
 
-local WanMark, private = ...
+--local WanMark, private = ...
 
-private.defaults = {}
-private.defaults.dcsdefaults = {}
+--private.defaults = {}
+--private.defaults.dcsdefaults = {}
 
 WanMark = {};
 
 ----------------------------
 -- Saved Variables Loader --
 ----------------------------
-local loader = CreateFrame("Frame")
-	loader:RegisterEvent("ADDON_LOADED")
-	loader:SetScript("OnEvent", function(self, event, arg1)
-		if event == "ADDON_LOADED" and arg1 == "WanMark" then
-			local function initDB(db, defaults)
-				if type(db) ~= "table" then db = {} end
-				if type(defaults) ~= "table" then return db end
-				for k, v in pairs(defaults) do
-					if type(v) == "table" then
-						db[k] = initDB(db[k], v)
-					elseif type(v) ~= type(db[k]) then
-						db[k] = v
-					end
-				end
-				return db
-			end
-			WanMarkDBPC = initDB(WanMarkDBPC, private.defaults) --saved variable per character, currently not used.
-			private.db = WanMarkDBPC
-			self:UnregisterEvent("ADDON_LOADED")
-		end
-	end)
+-- local loader = CreateFrame("Frame")
+--	loader:RegisterEvent("ADDON_LOADED")
+--		loader:SetScript("OnEvent", function(self, event, arg1)
+--			if event == "ADDON_LOADED" and arg1 == "WanMark" then
+--				local function initDB(db, defaults)
+--					if type(db) ~= "table" then db = {} end
+--					if type(defaults) ~= "table" then return db end
+--					for k, v in pairs(defaults) do
+--						if type(v) == "table" then
+--							db[k] = initDB(db[k], v)
+--						elseif type(v) ~= type(db[k]) then
+--							db[k] = v
+--						end
+--					end
+--					return db
+--				end
+--				WanMarkDBPC = initDB(WanMarkDBPC, private.defaults) --saved variable per character, currently not used.
+--				private.db = WanMarkDBPC
+--				self:UnregisterEvent("ADDON_LOADED")
+--			end
+--		end)
 
 ----------------------------------
 -- WanMark: Public, Private, Main
@@ -134,7 +135,11 @@ local function WMARK_Mark_Public()
 		--print ("roletoken for player = "..roleToken)
 		if (roleToken == "TANK") then
 			--print ("player is tank yes and mark is "..ROLEMARKS[index])
-			SetRaidTarget("player", ROLEMARKS[index])
+			local CurrentMark = GetRaidTargetIndex("player");
+			if (CurrentMark == nil) then CurrentMark=0 end
+			if (CurrentMark ~= ROLEMARKS[index]) then
+				SetRaidTarget("player", ROLEMARKS[index])
+			end
 			index=index+1
 		--else
 			--print ("player is not tank")
@@ -144,7 +149,11 @@ local function WMARK_Mark_Public()
 		for i=1,members do 
 			local role=UnitGroupRolesAssigned("party"..i)
 			if (role == "TANK") then 
-				SetRaidTarget("party"..i,ROLEMARKS[index])
+				local CurrentMark = GetRaidTargetIndex("party"..i);
+				if (CurrentMark == nil) then CurrentMark=0 end
+				if ( CurrentMark ~= ROLEMARKS[index]) then
+					SetRaidTarget("party"..i,ROLEMARKS[index])
+				end
 				--print ("party "..i.. " mark "..ROLEMARKS[index].." index "..index)
 				index=index+1
 				if (index == 8)then
@@ -166,13 +175,23 @@ local function WMARK_Mark_Public()
 	--print("Your current spec ID:", currentSpecID)
 	local roleToken = GetSpecializationRoleByID(currentSpecID)
 	--print(roleToken)
-	if ROLEMARKS[roleToken]then SetRaidTarget("player", ROLEMARKS[roleToken]) end
+	if ROLEMARKS[roleToken]then
+		local CurrentMark = GetRaidTargetIndex("player");
+		if (CurrentMark == nil) then CurrentMark=0 end
+		if (CurrentMark ~= ROLEMARKS[roleToken]) then
+			SetRaidTarget("player", ROLEMARKS[roleToken])
+		end
+	end
 	--####
 	local members = GetNumGroupMembers()-1;
 	for i=1,members do 
 		local role=UnitGroupRolesAssigned("party"..i)
 		if ROLEMARKS[role]then 
-			SetRaidTarget("party"..i,ROLEMARKS[role])
+			local CurrentMark = GetRaidTargetIndex("party"..i);
+			if (CurrentMark == nil) then CurrentMark=0 end
+			if ( CurrentMark ~= ROLEMARKS[role]) then
+				SetRaidTarget("party"..i,ROLEMARKS[role])
+			end
 			--print(i, role)
 		end 
 	end
@@ -189,7 +208,14 @@ local function WMARK_Mark_Private()
 	local playerName = string.lower(UnitName("player"));
 	--print ("["..UnitName("player").."]");
 	--print (playerName)
-	if (PMARKS[playerName])then SetRaidTarget("player",PMARKS[playerName]) end
+	if (PMARKS[playerName])then
+		local CurrentMark = GetRaidTargetIndex("player");
+		if (CurrentMark == nil) then CurrentMark=0 end
+		--print ("Current player mark is "..CurrentMark)
+		if (CurrentMark ~= PMARKS[playerName]) then
+			SetRaidTarget("player",PMARKS[playerName])
+		end
+	end
 	--
 	local members = GetNumGroupMembers()-1;
 	--print ("PartyMembers: ", PartyMembers)
@@ -201,9 +227,42 @@ local function WMARK_Mark_Private()
 				-- test
 			else
 				--print ("party"..i, "Name=[",pName , "] Num=", PMARKS[pName] )
-				SetRaidTarget("party"..i,PMARKS[pName])
+				local CurrentMark = GetRaidTargetIndex("party"..i);
+				if (CurrentMark == nil) then CurrentMark=0 end
+				if (CurrentMark ~= PMARKS[pName]) then
+					SetRaidTarget("party"..i,PMARKS[pName])
+				end
 			end
 		end
+	end
+end
+
+local function WMARK_Mark_Self()
+	local PMARKS={}
+	for k=0,8 do
+		for i in WanMarkDB.LINE[k]:gmatch("%w+") do
+			--print ("i="..i)
+			PMARKS[i]=k
+		end
+	end
+	local playerName = string.lower(UnitName("player"));
+	--print ("["..UnitName("player").."]");
+	--print (playerName)
+	local PlayerMark
+	if (PMARKS[playerName])then
+		PlayerMark=PMARKS[playerName]
+	else
+		PlayerMark=1
+	end
+	local CurrentMark = GetRaidTargetIndex("player");
+	if (CurrentMark == nil) then CurrentMark=0 end
+	--print ("Current player mark is "..CurrentMark)
+	if (PlayerMark ~= CurrentMark) then
+		--print ("marking self ("..playerName..") with "..PlayerMark)
+		--SetRaidTarget("player",0)
+		SetRaidTarget("player",PlayerMark)
+	--else
+		--print ("player already marked with "..PlayerMark)
 	end
 end
 
@@ -222,6 +281,11 @@ local function WMARK_Mark()
 			WMARK_Mark_Public()
 		end
 		gdbprivate.gdb.gdbdefaults = gdbprivate.gdbdefaults.gdbdefaults
+	else
+		if (WanMarkDB.WanMarkSelf == "on") then
+			--print ("marking self")
+			WMARK_Mark_Self()
+		end
 	end
 end	
 
@@ -231,7 +295,7 @@ end
 function WMARK_Show()
 	-- |cFFDC143C red
 	-- |cFF00FF00 green |r uncolored
-	print("|cFF00FF00WanMark mode: "..WanMarkDB.WanMarkMode..", automark:"..WanMarkDB.WanMarkActive..", raid:"..WanMarkDB.WanMarkRaid..".")
+	print("|cFF00FF00WanMark mode: "..WanMarkDB.WanMarkMode..", automark:"..WanMarkDB.WanMarkActive.." (raid:"..WanMarkDB.WanMarkRaid..", self:"..WanMarkDB.WanMarkSelf..").")
 end
 
 ------------------
@@ -255,6 +319,7 @@ local function WMARK_DeMark()
 		WMARK_Show()
 
 	else
+		SetRaidTarget("player", 0)
 		print("WanMark: not in group or raid.")
 		WMARK_Show()
 	end
@@ -283,7 +348,7 @@ function WMARK_On()
 	--print("WanMark mode: "..WanMarkDB.WanMarkMode..", automark:"..WanMarkDB.WanMarkActive..".")
 	WMARK_Show()
 	-- if IsInGroup() then
-	WMARK_Mark()
+	-- WMARK_Mark()
 	-- end
 end
 
@@ -354,6 +419,7 @@ function WanMark.ShowHelp()
 	print("  /wmark mode: switches marking mode between private and public.")
 	print("  /wmark show: prints assigned marks (different in private and public).")
 	print("  /wmark raid [on/off]: shows/enables/disables marking/demarking in raid group (experimental).")
+	print("  /wmark self [on/off]: shows/enables/disables for player without group (experimental).")
 end
 
 function WanMark.SlashCmdHandler(msg, editbox)
@@ -416,6 +482,10 @@ function WanMark.SlashCmdHandler(msg, editbox)
 			end
 		elseif (msg == "raid") then
 			print ("WanMark in raid: "..WanMarkDB.WanMarkRaid)
+		elseif (msg == "self") then
+			print ("WanMark for player: "..WanMarkDB.WanMarkSelf)
+		elseif (msg == "help") then
+			help="yes"
 		else
 			help="yes"
 		end
@@ -459,6 +529,19 @@ function WanMark.SlashCmdHandler(msg, editbox)
 			end
 			if (changed ~= "yes")then print ("WanMark: not the right raid command ["..word[2].."]") end
 			print ("WanMark in raid: "..WanMarkDB.WanMarkRaid)
+		elseif (words[1] == "self") then
+			--print ("word 1 is self")
+			if (words[2] == "on"  and WanMarkDB.WanMarkSelf ~= "on" ) then
+				WanMarkDB.WanMarkSelf="on"
+				changed="yes"
+			end
+			if (words[2] == "off" and WanMarkDB.WanMarkSelf ~= "off") then
+				WanMarkDB.WanMarkSelf="off"
+				changed="yes"
+			end
+			if (changed ~= "yes")then print ("WanMark: not the right self command ["..word[2].."]") end
+			print ("WanMark for player: "..WanMarkDB.WanMarkSelf)
+
 		else
 			--print ("more than 1 word, but no tank or healer")
 			for i=0,8 do
@@ -500,7 +583,8 @@ local toggleframe = CreateFrame("Button","WanMark",UIParent,"SecureHandlerClickT
 					WMARK_Mark()
 				end
 			else
-				print("WanMark: not in group or raid (mode: "..WanMarkDB.WanMarkMode..", automark "..WanMarkDB.WanMarkActive..").")
+				WMARK_Mark()
+				-- print("WanMark: not in group or raid (mode: "..WanMarkDB.WanMarkMode..", automark "..WanMarkDB.WanMarkActive..").")
 			end
 		elseif (button == "Mode")then
 			WMARK_Mode()
