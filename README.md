@@ -3,7 +3,13 @@ WanMark is an addon to mark party members
 - in raid - it can automatically mark all tanks;
 - not in party playing solo - it can keep your character always marked (idea coming from playing my little invisible goblin rogue);
 - additionally, it has private mode, when you can assign list of character names per mark, to keep that characters always marked.
- 
+
+
+Quick startup guide:
+1. Install
+2. Type "/wmark" to get settings window, configure/enable addon and start using.
+3. Setup shortcuts (if needed) at WOW Esc-Menu -> Key Bindings -> Addons -> WanMark
+
 
 WanMark has two modes:
 1) public, to mark
@@ -33,6 +39,10 @@ WanMark let you assign 3 keybindings (using standard WOW Esc-Menu -> Key Binding
 - 2) hot key to "switch mode" (between public or private)
 - 3) hot key to "remove all party marks"
 (for example, I use \, Shift-\, Alt-\)
+
+WanMark version 1.0.7 and up got settings window, so you can use GUI to change/configure settings.
+To get to settings window, just use slash command "/wmark" without parameters.
+Of course old command line way to manage settings is still available and explained below.
 
 
 WanMark supports the following slash commands (/wmark):
