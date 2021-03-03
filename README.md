@@ -5,7 +5,7 @@ WanMark is an addon to mark party members
 - additionally, it has private mode, when you can assign list of character names per mark, to keep that characters always marked.
 
 
-Quick tsartup guide:
+Quick startup guide:
 1. Install
 2. Type "/wmark" to get settings window, configure/enable addon and start using.
 3. Setup shortcuts (if needed) at WOW Esc-Menu -> Key Bindings -> Addons -> WanMark
@@ -41,7 +41,7 @@ WanMark let you assign 3 keybindings (using standard WOW Esc-Menu -> Key Binding
 (for example, I use \, Shift-\, Alt-\)
 
 WanMark version 1.0.7 and up got settings window, so you can use GUI to change/configure settings.
-To get to setting, just use slash command "/wmark" without parameters.
+To get to settings window, just use slash command "/wmark" without parameters.
 Of course old command line way to manage settings is still available and explained below.
 
 
